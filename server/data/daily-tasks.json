@@ -1,0 +1,42 @@
+[
+  {
+    "id": "sign-in-rewards",
+    "title": "Claim daily sign-in rewards",
+    "detail": "Collect the daily login bonus"
+  },
+  {
+    "id": "radar-tasks",
+    "title": "Complete radar tasks",
+    "detail": "Clear available radar missions"
+  },
+  {
+    "id": "train-troops",
+    "title": "Train troops",
+    "detail": "Start a training queue"
+  },
+  {
+    "id": "gather-resources",
+    "title": "Gather resources",
+    "detail": "Send squads to resource tiles"
+  },
+  {
+    "id": "alliance-donation",
+    "title": "Donate to the alliance",
+    "detail": "Contribute to an alliance tech request"
+  },
+  {
+    "id": "free-attempts",
+    "title": "Use free attempts",
+    "detail": "Check event and arena attempts"
+  },
+  {
+    "id": "4e9f4f73-5eb1-4e49-b05b-3bc7653d49a9",
+    "title": "Complete Arms Race",
+    "detail": "Complete minimum of 18 boxes out of the total 36 box."
+  },
+  {
+    "id": "a0e27483-af4b-400b-90df-ef7fc053c1bf",
+    "title": "Collect Alliance Gifts",
+    "detail": "Collect Alliance Gifts"
+  }
+]

@@ -1,0 +1,14 @@
+<mat-toolbar class="topbar">
+  <a class="brand" routerLink="/" aria-label="Regular Works home">
+    <span class="brand-mark"><mat-icon>check</mat-icon></span>
+    <span>Regular<span class="brand-light">Works</span></span>
+  </a>
+  <span class="toolbar-spacer"></span>
+  <a mat-button routerLink="/daily-tasks" routerLinkActive="nav-active" ariaCurrentWhenActive="page">
+    <mat-icon>task_alt</mat-icon>
+    Daily Tasks
+  </a>
+</mat-toolbar>
+<main>
+  <router-outlet></router-outlet>
+</main>

@@ -1,0 +1,100 @@
+<section class="tasks-page">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">LAST WAR <span>/</span> DAILY CHECKLIST</p>
+      <h1>Daily Tasks</h1>
+      <p class="subheading">A clear run at today's objectives.</p>
+    </div>
+    <div class="heading-actions">
+      <a mat-stroked-button class="manage-link" routerLink="/manage-daily-tasks">
+        <mat-icon>edit</mat-icon>
+        Manage Daily Tasks
+      </a>
+      <div class="date-stamp"><mat-icon>calendar_today</mat-icon><span>{{ today }}</span></div>
+    </div>
+  </header>
+
+  <div class="tasks-layout">
+    <aside class="profile-pane" aria-label="Task profiles">
+      <p class="profile-heading">PROFILES</p>
+      <nav class="profile-list" aria-label="Choose a task profile">
+        @for (profile of profiles(); track profile.id) {
+          <button
+            type="button"
+            class="profile-tab"
+            [class.is-active]="selectedProfileId() === profile.id"
+            [attr.aria-pressed]="selectedProfileId() === profile.id"
+            (click)="selectProfile(profile)">
+            {{ profile.name }}
+          </button>
+        }
+        <button type="button" class="profile-tab add-profile-tab" (click)="openAddProfile()">
+          <mat-icon>add</mat-icon>
+          Add Another
+        </button>
+      </nav>
+      @if (addingProfile()) {
+        <form class="profile-form" (ngSubmit)="addProfile()" #profileForm="ngForm">
+          <label for="profile-name">Profile name</label>
+          <input
+            id="profile-name"
+            name="profileName"
+            type="text"
+            [ngModel]="profileName()"
+            (ngModelChange)="profileName.set($event)"
+            maxlength="40"
+            required
+            autofocus>
+          @if (profileError()) {
+            <p class="profile-error" role="alert">{{ profileError() }}</p>
+          }
+          <div class="profile-form-actions">
+            <button type="submit" [disabled]="profileForm.invalid || creatingProfile()">Add</button>
+            <button type="button" class="cancel-profile" (click)="cancelAddProfile()" [disabled]="creatingProfile()">Cancel</button>
+          </div>
+        </form>
+      }
+    </aside>
+
+    <section class="task-panel" aria-labelledby="list-title">
+      <div class="panel-heading">
+        <div>
+          <h2 id="list-title">Today's objectives</h2>
+          <p>Check off each task as you go.</p>
+        </div>
+        <span class="progress-count">{{ completedCount }} <span>/ {{ tasks().length }}</span></span>
+      </div>
+      @if (loading()) {
+        <p class="task-message" role="status">Loading daily tasks...</p>
+      } @else if (error()) {
+        <p class="task-message task-error" role="alert">{{ error() }}</p>
+      } @else if (tasks().length === 0) {
+        <p class="task-message">No daily tasks yet. Add some using Manage Daily Tasks.</p>
+      } @else {
+        <div class="progress-track" role="progressbar" aria-label="Daily task progress" [attr.aria-valuenow]="completedCount" [attr.aria-valuemax]="tasks().length" aria-valuemin="0">
+          <span [style.width.%]="progressPercent"></span>
+        </div>
+        <div class="task-list">
+          @for (task of tasks(); track task.id) {
+            <div class="task-row" [class.is-complete]="task.completed">
+              <mat-checkbox
+                [ngModel]="task.completed"
+                (ngModelChange)="setTaskCompleted(task.id, $event)"
+                [disabled]="savingProgress()"
+                [aria-label]="'Mark ' + task.title + ' complete'">
+                <span class="task-copy">
+                  <span class="task-title">{{ task.title }}</span>
+                  <span class="task-detail">{{ task.detail }}</span>
+                </span>
+              </mat-checkbox>
+            </div>
+          }
+        </div>
+      }
+      <footer class="panel-footer">
+        <mat-icon>info_outline</mat-icon>
+        <span>{{ savingProgress() ? 'Saving progress...' : 'Progress is saved separately for each profile.' }}</span>
+      </footer>
+    </section>
+  </div>
+</section>

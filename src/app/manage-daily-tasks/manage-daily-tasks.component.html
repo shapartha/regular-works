@@ -1,0 +1,68 @@
+<section class="manage-page">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">LAST WAR <span>/</span> CHECKLIST SETTINGS</p>
+      <h1>Manage Daily Tasks</h1>
+      <p class="subheading">Add, edit, or remove items from your daily checklist.</p>
+    </div>
+    <a mat-stroked-button class="back-link" routerLink="/daily-tasks">
+      <mat-icon>arrow_back</mat-icon>
+      Daily Tasks
+    </a>
+  </header>
+
+  @if (error()) {
+    <p class="error-message" role="alert">{{ error() }}</p>
+  }
+
+  <section class="manage-panel" aria-labelledby="editor-title">
+    <form class="task-form" (ngSubmit)="saveTask()" #taskForm="ngForm">
+      <h2 id="editor-title">{{ editingTaskId() ? 'Edit task' : 'Add a task' }}</h2>
+      <label for="task-title">Task title</label>
+      <input id="task-title" name="title" type="text" [(ngModel)]="draft.title" maxlength="120" required>
+      <label for="task-detail">Details <span>(optional)</span></label>
+      <textarea id="task-detail" name="detail" [(ngModel)]="draft.detail" maxlength="300" rows="2"></textarea>
+      <div class="form-actions">
+        <button mat-flat-button type="submit" [disabled]="taskForm.invalid || saving()">
+          <mat-icon>{{ editingTaskId() ? 'save' : 'add' }}</mat-icon>
+          {{ saving() ? 'Saving...' : editingTaskId() ? 'Save changes' : 'Add task' }}
+        </button>
+        @if (editingTaskId()) {
+          <button mat-button type="button" (click)="cancelEdit()" [disabled]="saving()">Cancel</button>
+        }
+      </div>
+    </form>
+
+    <div class="task-list" aria-labelledby="tasks-title">
+      <div class="list-heading">
+        <h2 id="tasks-title">Checklist items</h2>
+        <span>{{ tasks().length }} {{ tasks().length === 1 ? 'task' : 'tasks' }}</span>
+      </div>
+
+      @if (loading()) {
+        <p class="list-message" role="status">Loading tasks...</p>
+      } @else if (tasks().length === 0) {
+        <p class="list-message">No tasks yet. Add one above to get started.</p>
+      } @else {
+        @for (task of tasks(); track task.id) {
+          <article class="task-row">
+            <div class="task-copy">
+              <h3>{{ task.title }}</h3>
+              @if (task.detail) {
+                <p>{{ task.detail }}</p>
+              }
+            </div>
+            <div class="task-actions">
+              <button mat-icon-button type="button" [attr.aria-label]="'Edit ' + task.title" [disabled]="saving()" (click)="editTask(task)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button type="button" class="delete-button" [attr.aria-label]="'Delete ' + task.title" [disabled]="saving()" (click)="deleteTask(task)">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+          </article>
+        }
+      }
+    </div>
+  </section>
+</section>
