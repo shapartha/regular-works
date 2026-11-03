@@ -2,11 +2,16 @@ import { randomUUID } from 'node:crypto';
 import { readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { dirname, extname, join, resolve, sep } from 'node:path';
 
-const dataFile = join(dirname(fileURLToPath(import.meta.url)), 'data', 'daily-tasks.json');
-const progressFile = join(dirname(fileURLToPath(import.meta.url)), 'data', 'daily-task-progress.json');
-const port = Number(process.env.API_PORT ?? 3000);
+const dataDirectory = process.env.DATA_DIR
+  ? resolve(process.env.DATA_DIR)
+  : join(dirname(fileURLToPath(import.meta.url)), 'data');
+const dataFile = join(dataDirectory, 'daily-tasks.json');
+const progressFile = join(dataDirectory, 'daily-task-progress.json');
+const staticDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'dist', 'regular-works', 'browser');
+const port = Number(process.env.PORT ?? process.env.API_PORT ?? 3000);
+const host = process.env.HOST ?? '0.0.0.0';
 const maxBodyBytes = 16 * 1024;
 const progressResetHour = 7;
 const progressResetMinute = 30;
@@ -205,8 +210,80 @@ function sendJson(response, status, value) {
   response.end(JSON.stringify(value));
 }
 
+async function serveFrontend(request, response, pathname) {
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    response.writeHead(405, { Allow: 'GET, HEAD' });
+    response.end();
+    return;
+  }
+
+  let decodedPath;
+  try {
+    decodedPath = decodeURIComponent(pathname);
+  } catch {
+    response.writeHead(400);
+    response.end('Invalid path.');
+    return;
+  }
+
+  const requestedFile = resolve(staticDirectory, `.${decodedPath}`);
+  if (requestedFile !== staticDirectory && !requestedFile.startsWith(`${staticDirectory}${sep}`)) {
+    response.writeHead(400);
+    response.end('Invalid path.');
+    return;
+  }
+
+  let file = requestedFile;
+  try {
+    const contents = await readFile(file);
+    const contentType = staticContentTypes[extname(file).toLowerCase()] ?? 'application/octet-stream';
+    response.writeHead(200, {
+      'content-type': contentType,
+      'cache-control': extname(file) === '.html' ? 'no-cache' : 'public, max-age=31536000, immutable',
+    });
+    response.end(request.method === 'HEAD' ? undefined : contents);
+    return;
+  } catch (error) {
+    if (error.code !== 'ENOENT' && error.code !== 'EISDIR') {
+      throw error;
+    }
+  }
+
+  if (extname(file)) {
+    response.writeHead(404);
+    response.end('Not found.');
+    return;
+  }
+
+  file = join(staticDirectory, 'index.html');
+  const contents = await readFile(file);
+  response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-cache' });
+  response.end(request.method === 'HEAD' ? undefined : contents);
+}
+
+const staticContentTypes = {
+  '.css': 'text/css; charset=utf-8',
+  '.html': 'text/html; charset=utf-8',
+  '.ico': 'image/x-icon',
+  '.jpeg': 'image/jpeg',
+  '.jpg': 'image/jpeg',
+  '.js': 'text/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.png': 'image/png',
+  '.svg': 'image/svg+xml',
+  '.txt': 'text/plain; charset=utf-8',
+  '.webp': 'image/webp',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+};
+
 async function handleRequest(request, response) {
   const pathname = new URL(request.url, 'http://localhost').pathname;
+  if (pathname !== '/api' && !pathname.startsWith('/api/')) {
+    await serveFrontend(request, response, pathname);
+    return;
+  }
+
   const profileProgressMatch = pathname.match(/^\/api\/daily-task-profiles\/([^/]+)\/progress$/);
   if (pathname === '/api/daily-task-profiles' && request.method === 'GET') {
     const store = await readProgressStore();
@@ -339,8 +416,8 @@ const server = createServer((request, response) => {
   });
 });
 
-server.listen(port, '127.0.0.1', () => {
-  console.log(`Daily tasks API listening on http://127.0.0.1:${port}`);
+server.listen(port, host, () => {
+  console.log(`Regular Works server listening on ${host}:${port}`);
   console.log(`Daily task progress resets at 07:30 server local time (${Intl.DateTimeFormat().resolvedOptions().timeZone}).`);
   void runDailyProgressReset();
 });
