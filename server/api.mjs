@@ -279,6 +279,16 @@ const staticContentTypes = {
 
 async function handleRequest(request, response) {
   const pathname = new URL(request.url, 'http://localhost').pathname;
+  if (pathname === '/health') {
+    if (request.method !== 'GET') {
+      response.setHeader('Allow', 'GET');
+      sendJson(response, 405, { error: 'Method not allowed.' });
+      return;
+    }
+    sendJson(response, 200, { status: 'ok' });
+    return;
+  }
+
   if (pathname !== '/api' && !pathname.startsWith('/api/')) {
     await serveFrontend(request, response, pathname);
     return;
