@@ -2,6 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
+declare global {
+  interface Window {
+    __REGULAR_WORKS_API_BASE_URL__?: string;
+  }
+}
+
 export interface DailyTask {
   id: string;
   title: string;
@@ -19,8 +25,9 @@ export type DailyTaskInput = Pick<DailyTask, 'title' | 'detail'>;
 
 @Injectable({ providedIn: 'root' })
 export class DailyTasksService {
-  private readonly apiUrl = '/api/daily-tasks';
-  private readonly profilesUrl = '/api/daily-task-profiles';
+  private readonly apiBaseUrl = (window.__REGULAR_WORKS_API_BASE_URL__ ?? '').replace(/\/+$/, '');
+  private readonly apiUrl = `${this.apiBaseUrl}/api/daily-tasks`;
+  private readonly profilesUrl = `${this.apiBaseUrl}/api/daily-task-profiles`;
 
   constructor(private readonly http: HttpClient) {}
 

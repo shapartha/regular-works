@@ -1,6 +1,6 @@
 # Regular Works
 
-A standalone Angular 22 application using Angular Material. Daily checklist items and per-profile completion progress are persisted by a small Node.js API in separate JSON files under `server/data/`.
+A standalone Angular 22 frontend using Angular Material. It uses the separately deployed `RegularWorksBackend` API for task and profile data.
 
 ## Requirements
 
@@ -11,20 +11,21 @@ A standalone Angular 22 application using Angular Material. Daily checklist item
 
 ```sh
 npm install
-npm run start:dev
+npm start
 ```
 
-`npm run start:dev` runs the JSON-backed API and Angular development server together. Open the local URL printed by Angular CLI. The dev server proxies `/api` requests to the local API.
+The Angular development server proxies API requests to `http://localhost:3001`. Start the backend separately from its project folder.
 
 All profiles' task progress is cleared daily at 07:30 in the API server's local timezone. If the API is offline at that time, it clears progress when it next starts.
 
 ## Deploy to Render
 
-Create a **Web Service** from this repository and configure:
+Deploy this repository as a **Static Site**:
 
 - Build command: `npm ci && npm run build`
-- Start command: `npm start`
+- Publish directory: `dist/regular-works/browser`
+- Environment variable: `API_BASE_URL` set to the backend service's origin, for example `https://regular-works-backend.onrender.com`
 
-The build produces the Angular app, and the single Node.js process serves both the app and `/api` routes. Render provides the `PORT` environment variable; the server binds to all interfaces.
+Deploy `RegularWorksBackend` as a separate **Web Service**. Set its `ALLOWED_ORIGINS` environment variable to this Static Site's origin.
 
-The JSON files need persistent storage if edits must survive service restarts and redeploys. Attach a Render Persistent Disk (for example at `/var/data`) and set the service environment variable `DATA_DIR` to that mount path. Without a persistent disk, a Render free service's filesystem is ephemeral.
+The backend JSON files need persistent storage if edits must survive service restarts and redeploys. Attach a Render Persistent Disk to the backend service (for example at `/var/data`) and set `DATA_DIR=/var/data`. Without a persistent disk, the backend filesystem is ephemeral.

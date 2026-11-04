@@ -15,6 +15,13 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "index": "src/index.html",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public",
+                "output": "/"
+              }
+            ],
             "styles": [
               "node_modules/@angular/material/prebuilt-themes/azure-blue.css",
               "src/styles.css"

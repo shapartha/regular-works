@@ -3,10 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node server/api.mjs",
-    "start:dev": "node server/start.mjs",
-    "start:api": "node server/api.mjs",
-    "build": "ng build",
+    "start": "ng serve --proxy-config proxy.conf.json",
+    "build": "node scripts/write-runtime-config.mjs && ng build",
     "watch": "ng build --watch --configuration development"
   },
   "dependencies": {
