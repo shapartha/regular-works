@@ -25,7 +25,7 @@ export type DailyTaskInput = Pick<DailyTask, 'title' | 'detail'>;
 
 @Injectable({ providedIn: 'root' })
 export class DailyTasksService {
-  private readonly apiBaseUrl = (window.__REGULAR_WORKS_API_BASE_URL__ ?? '').replace(/\/+$/, '');
+  private readonly apiBaseUrl = ('https://shapartha.online/regular-works').replace(/\/+$/, '');
   private readonly apiUrl = `${this.apiBaseUrl}/api/daily-tasks`;
   private readonly profilesUrl = `${this.apiBaseUrl}/api/daily-task-profiles`;
 
