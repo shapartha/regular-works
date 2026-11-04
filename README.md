@@ -29,3 +29,15 @@ Deploy this repository as a **Static Site**:
 Deploy `RegularWorksBackend` as a separate **Web Service**. Set its `ALLOWED_ORIGINS` environment variable to this Static Site's origin.
 
 The backend JSON files need persistent storage if edits must survive service restarts and redeploys. Attach a Render Persistent Disk to the backend service (for example at `/var/data`) and set `DATA_DIR=/var/data`. Without a persistent disk, the backend filesystem is ephemeral.
+
+## Deploy to GitHub Pages
+
+The `Deploy to GitHub Pages` workflow builds and publishes the app whenever changes are pushed to `main`. It is also available to run manually from the repository's **Actions** tab.
+
+After the first successful workflow run, select **Settings → Pages → Build and deployment → Source → GitHub Actions**. The site URL is:
+
+`https://shapartha.github.io/regular-works/`
+
+The workflow builds with the repository subpath and publishes a `404.html` fallback so Angular routes continue to load when opened directly.
+
+Because the API is hosted on a different origin, add `https://shapartha.github.io` to the backend's `ALLOWED_ORIGINS` environment variable in cPanel, preserving any existing allowed origins. Restart the Node.js app after changing the variable.
