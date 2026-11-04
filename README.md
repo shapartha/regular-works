@@ -32,9 +32,9 @@ The backend JSON files need persistent storage if edits must survive service res
 
 ## Deploy to GitHub Pages
 
-The `Deploy to GitHub Pages` workflow builds and publishes the app whenever changes are pushed to `main`. It is also available to run manually from the repository's **Actions** tab.
+The `Deploy to GitHub Pages` workflow builds and publishes the app whenever changes are pushed to `main`. It is also available to run manually from the repository's **Actions** tab. The workflow attempts to enable Pages automatically. If that step fails with a permissions error, enable it once in **Settings → Pages → Build and deployment → Source → GitHub Actions**, then rerun the workflow.
 
-After the first successful workflow run, select **Settings → Pages → Build and deployment → Source → GitHub Actions**. The site URL is:
+The site URL is:
 
 `https://shapartha.github.io/regular-works/`
 
