@@ -2,18 +2,75 @@
   <div class="intro">
     <p class="eyebrow"><span></span> YOUR PERSONAL WORKSPACE</p>
     <h1>Make today<br><span>count.</span></h1>
-    <p class="summary">A quieter place to keep your daily last war task priorities in view.</p>
-    <a mat-flat-button class="daily-link" routerLink="/daily-tasks">
-      <mat-icon>arrow_forward</mat-icon>
-      Daily Tasks
-    </a>
+    <p class="summary">A quieter place to keep your daily priorities and grocery inventory in view.</p>
+    <nav class="home-actions" aria-label="Workspace sections">
+      <a mat-flat-button class="daily-link" routerLink="/daily-tasks">
+        <mat-icon>arrow_forward</mat-icon>
+        Daily Tasks
+      </a>
+      <a mat-stroked-button class="inventory-link" routerLink="/grocery-inventory">
+        <mat-icon>shopping_basket</mat-icon>
+        Grocery Inventory
+      </a>
+    </nav>
     <p class="note">One step at a time.</p>
   </div>
-  <aside class="day-note" aria-label="A fresh start">
-    <div class="note-top"><mat-icon>wb_sunny</mat-icon><span>START FRESH</span></div>
-    <p>Small wins<br>add up.</p>
-    <div class="note-rule"></div>
-    <span class="note-caption">A little progress is still progress.</span>
-    <span class="note-number">01</span>
-  </aside>
+
+  <section class="home-inventory" aria-labelledby="home-inventory-title">
+    <header class="inventory-heading">
+      <div>
+        <p class="eyebrow">KEEP IT STOCKED</p>
+        <h2 id="home-inventory-title">Grocery Inventory</h2>
+      </div>
+    </header>
+
+    @if (inventoryError()) {
+      <p class="inventory-message inventory-error" role="alert">{{ inventoryError() }}</p>
+    }
+
+    @if (inventoryLoading()) {
+      <p class="inventory-message" role="status">Loading grocery inventory...</p>
+    } @else if (!inventoryError() && groceryItems().length === 0) {
+      <p class="inventory-message">No grocery items yet. Add items from Grocery Inventory.</p>
+    }
+
+    @if (!inventoryLoading() && groceryItems().length > 0) {
+      <div class="home-inventory-list">
+        @for (item of groceryItems(); track item.id) {
+          <article class="home-inventory-item">
+            <div class="item-copy">
+              <h3>{{ item.name }}</h3>
+              <p>Quantity: {{ item.quantity }}</p>
+            </div>
+            <span
+              class="status-badge"
+              [class.status-available]="item.status === 'available'"
+              [class.status-low]="item.status === 'low-or-unavailable'"
+              [class.status-needed]="item.status === 'need-supply'">
+              {{ statusLabels[item.status] }}
+            </span>
+            <div class="item-actions">
+              <button
+                mat-stroked-button
+                type="button"
+                [attr.aria-pressed]="item.status === 'available'"
+                [disabled]="savingItemId() !== null || item.status === 'available'"
+                (click)="setItemStatus(item, 'available')">
+                Available
+              </button>
+              <button
+                mat-flat-button
+                type="button"
+                class="order-button"
+                [attr.aria-pressed]="item.status === 'need-supply'"
+                [disabled]="savingItemId() !== null || item.status === 'need-supply'"
+                (click)="setItemStatus(item, 'need-supply')">
+                Order
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
 </section>

@@ -1,6 +1,6 @@
 # Regular Works
 
-A standalone Angular 22 frontend using Angular Material. It uses the separately deployed `RegularWorksBackend` API for task and profile data.
+A standalone Angular 22 frontend using Angular Material. It uses the separately deployed `RegularWorksBackend` API for task, profile, and grocery inventory data. Angular serves the local environment when running `npm start` and replaces it with the production environment for production builds.
 
 ## Requirements
 
@@ -24,7 +24,8 @@ Deploy this repository as a **Static Site**:
 
 - Build command: `npm ci && npm run build`
 - Publish directory: `dist/regular-works/browser`
-- Environment variable: `API_BASE_URL` set to the backend service's origin, for example `https://regular-works-backend.onrender.com`
+
+Set the production API base URL in `env/environment.prod.ts` before building if it differs from the configured backend.
 
 Deploy `RegularWorksBackend` as a separate **Web Service**. Set its `ALLOWED_ORIGINS` environment variable to this Static Site's origin.
 

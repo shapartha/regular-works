@@ -1,0 +1,79 @@
+<section class="inventory-page">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">HOME <span>/</span> GROCERIES</p>
+      <h1>Grocery Inventory</h1>
+      <p class="subheading">Keep track of what you have and what needs restocking.</p>
+    </div>
+  </header>
+
+  @if (error()) {
+    <p class="error-message" role="alert">{{ error() }}</p>
+  }
+
+  <section class="inventory-panel" aria-labelledby="editor-title">
+    <form class="item-form" (ngSubmit)="saveItem()" #itemForm="ngForm">
+      <h2 id="editor-title">{{ editingItemId() ? 'Edit grocery item' : 'Add a grocery item' }}</h2>
+      <div class="form-fields">
+        <div class="field">
+          <label for="item-name">Item name</label>
+          <input id="item-name" name="name" type="text" [(ngModel)]="draft.name" maxlength="120" required>
+        </div>
+        <div class="field quantity-field">
+          <label for="item-quantity">Quantity</label>
+          <input id="item-quantity" name="quantity" type="number" [(ngModel)]="draft.quantity" min="0" step="1" required>
+        </div>
+        <div class="field">
+          <label for="item-status">Status</label>
+          <select id="item-status" name="status" [(ngModel)]="draft.status" required>
+            @for (status of statuses; track status.value) {
+              <option [value]="status.value">{{ status.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button mat-flat-button type="submit" [disabled]="itemForm.invalid || saving()">
+          <mat-icon>{{ editingItemId() ? 'save' : 'add' }}</mat-icon>
+          {{ saving() ? 'Saving...' : editingItemId() ? 'Save changes' : 'Add item' }}
+        </button>
+        @if (editingItemId()) {
+          <button mat-button type="button" (click)="cancelEdit()" [disabled]="saving()">Cancel</button>
+        }
+      </div>
+    </form>
+
+    <div class="item-list" aria-labelledby="items-title">
+      <div class="list-heading">
+        <h2 id="items-title">Inventory items</h2>
+        <span>{{ items().length }} {{ items().length === 1 ? 'item' : 'items' }}</span>
+      </div>
+
+      @if (loading()) {
+        <p class="list-message" role="status">Loading grocery inventory...</p>
+      } @else if (items().length === 0) {
+        <p class="list-message">Your inventory is empty. Add an item above to get started.</p>
+      } @else {
+        @for (item of items(); track item.id) {
+          <article class="item-row">
+            <div class="item-copy">
+              <h3>{{ item.name }}</h3>
+              <p>Quantity: {{ item.quantity }}</p>
+            </div>
+            <span class="status-badge" [class.status-available]="item.status === 'available'" [class.status-low]="item.status === 'low-or-unavailable'" [class.status-needed]="item.status === 'need-supply'">
+              {{ statusLabels[item.status] }}
+            </span>
+            <div class="item-actions">
+              <button mat-icon-button type="button" [attr.aria-label]="'Edit ' + item.name" [disabled]="saving()" (click)="editItem(item)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button type="button" class="delete-button" [attr.aria-label]="'Delete ' + item.name" [disabled]="saving()" (click)="deleteItem(item)">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+          </article>
+        }
+      }
+    </div>
+  </section>
+</section>

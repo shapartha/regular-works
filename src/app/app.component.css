@@ -9,4 +9,4 @@ a[mat-button] { display: inline-flex; align-items: center; gap: 7px; color: #455
 a[mat-button] mat-icon { margin: 0; }
 a.nav-active { color: #126d62; background: #e8f4f1; }
 main { min-height: calc(100vh - 68px); }
-@media (max-width: 520px) { .topbar { height: 60px; padding-inline: 16px; } main { min-height: calc(100vh - 60px); } }
+@media (max-width: 480px) { .topbar .mat-mdc-button { display: none; } }

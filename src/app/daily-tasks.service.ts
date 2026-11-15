@@ -1,12 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-
-declare global {
-  interface Window {
-    __REGULAR_WORKS_API_BASE_URL__?: string;
-  }
-}
+import { environment } from '../../env/environment.local';
 
 export interface DailyTask {
   id: string;
@@ -25,7 +20,7 @@ export type DailyTaskInput = Pick<DailyTask, 'title' | 'detail'>;
 
 @Injectable({ providedIn: 'root' })
 export class DailyTasksService {
-  private readonly apiBaseUrl = ('https://shapartha.online/regular-works').replace(/\/+$/, '');
+  private readonly apiBaseUrl = environment.apiBaseUrl.replace(/\/+$/, '');
   private readonly apiUrl = `${this.apiBaseUrl}/api/daily-tasks`;
   private readonly profilesUrl = `${this.apiBaseUrl}/api/daily-task-profiles`;
 
